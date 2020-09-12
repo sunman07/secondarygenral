@@ -37,21 +37,7 @@ const StandardConfigSecondary = () => {
     setInfoDetails('');
   };
 
-  //提交审批请求 getApproveScore
-  const scoreApproveForm = params => {
-    getApproveScore(params).then(res => {
-      console.log(res);
-      if (res.status === 200 && res.data.Msg === '操作成功') {
-        setUncheckedDetails(false);
-        setTimeout(() => {
-          setCheckDetails(false);
-        }, 500);
-        message.success(res.data.Msg);
-      } else {
-        message.error(res.data.Msg);
-      }
-    });
-  };
+ 
 
   //搜索表单提交
   const onFinish = values => {
@@ -78,8 +64,9 @@ const StandardConfigSecondary = () => {
     });
   };
 
-  //获取子组件方法
+  //获取子组件方法 列表分页
   const pageForContent = useRef(null);
+  //表单
   const formRef = useRef(null);
   //分页
   const onPageChange = values => {
@@ -93,6 +80,7 @@ const StandardConfigSecondary = () => {
   //获取主列表 传入子组件
   const getConfigForStandard = () => {
     setMainloading(true);
+    //清空主列表
     setConfigEntry([]);
     getScoreOfEntry(paramsOfEntry).then(res => {
       console.log(res);
@@ -140,6 +128,22 @@ const StandardConfigSecondary = () => {
     };
     scoreApproveForm(params);
     onReset();
+  };
+
+   //提交审批请求 getApproveScore
+   const scoreApproveForm = params => {
+    getApproveScore(params).then(res => {
+      console.log(res);
+      if (res.status === 200 && res.data.Msg === '操作成功') {
+        setUncheckedDetails(false);
+        setTimeout(() => {
+          setCheckDetails(false);
+        }, 500);
+        message.success(res.data.Msg);
+      } else {
+        message.error(res.data.Msg);
+      }
+    });
   };
 
   const rejectReason = () => {
