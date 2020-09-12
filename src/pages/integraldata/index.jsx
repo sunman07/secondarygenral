@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { Button, Select, Layout, Form, Input, Modal, message } from 'antd';
-import { getMainEntry, getApproveScore } from '@/services/service';
+import { getMainEntry, getApproveScore,getScoreOfEntry } from '@/services/service';
 import moment from 'moment';
 import styles from './integraldata.less';
 import classNames from 'classnames';
@@ -16,7 +16,7 @@ const StandardConfigSecondary = () => {
   const [paramsOfEntry, setParamsOfEntry] = useState({
     Page: 1,
     PageCount: 10,
-    ApprovalStatus: 12,
+     
   });
   // 表格条目总数
   const [mainTotal, setMainTotal] = useState(Number);
@@ -55,9 +55,16 @@ const StandardConfigSecondary = () => {
 
   //搜索表单提交
   const onFinish = values => {
-    console.log(values);
-    delete paramsOfEntry.ApprovalStatus;
-    let searchValues = Object.assign(values, paramsOfEntry);
+    //处理表单日期
+    let dateParams={}
+    if(values.DateTime){
+      dateParams={
+        StartDate:moment(values.DateTime[0]._d).format('YYYY-MM-DD'),
+        EndDate:moment(values.DateTime[1]._d).format('YYYY-MM-DD'),
+      }
+    }
+    let searchValues = Object.assign(values, paramsOfEntry,dateParams);
+    console.log(searchValues,'params');
     setParamsOfEntry(searchValues);
   };
 
@@ -87,7 +94,8 @@ const StandardConfigSecondary = () => {
   const getConfigForStandard = () => {
     setMainloading(true);
     setConfigEntry([]);
-    getMainEntry(paramsOfEntry).then(res => {
+    getScoreOfEntry(paramsOfEntry).then(res => {
+      console.log(res);
       if (res.status == 200) {
         setMainloading(false);
         let index = 0;

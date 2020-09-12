@@ -3,20 +3,44 @@ import { stringify } from 'qs';
 const baseUrl = '/apartment';
 const baseLink = '/secondclassroom';
 
+//积分查看列表 
+export const getScoreOfEntry = params => {
+  return axios
+    .get(
+      baseLink +
+      `/api/v1/scoredataview/integraldata?Page=${params.Page}&PageCount=${params.PageCount}&AcademicYearCode=${params.AcademicYearCode}&AcademicTermCode=${params.AcademicTermCode}&AcademyCode=${params.AcademyCode}&GradeCode=${params.GradeCode}&ClassCode=${params.ClassCode}&ModuleCode=${params.ModuleCode}&ItemCode=${params.ItemCode}&StandardCode=${params.StandardCode}&StuUserCode=${params.StuUserCode}&StuName=${params.StuName}&StartDate=${params.StartDate}&EndDate=${params.EndDate}`,
+    )
+    .then(res => {
+      return res;
+    });
+};
+//获取学年 学期 
+export const getGradeWithTerm = params => {
+  return axios
+    .get(`/core/api/v1/bizcode?code_type=${params.code_type}`, params)
+    .then(res => {
+      return res;
+    });
+};
+
+//获取责任院系
+export const getMangerAcademy = () => {
+  return axios.get(`/core/api/v1/user/staffroledept?RoleGroup=2`).then(res => {
+    return res;
+  });
+};
 //获取主列表
 export const getMainEntry = params => {
   return axios
     .get(
       baseLink +
-        `/api/v1/scoreapprove/queryscoreapprove?ApprovalStatus=${
-          params.ApprovalStatus
-        }&Page=${params.Page}&PageCount=${
-          params.PageCount
-        }&ClassCode=${params.ClassCode ||
-          ''}&StuUserCode=${params.StuUserCode ||
-          ''}&StuName=${params.StuName || ''}&ModuleCode=${params.ModuleCode ||
-          ''}&ItemCode=${params.ItemCode ||
-          ''}&StandardCode=${params.StandardCode || ''}`,
+      `/api/v1/scoreapprove/queryscoreapprove?ApprovalStatus=${params.ApprovalStatus
+      }&Page=${params.Page}&PageCount=${params.PageCount
+      }&ClassCode=${params.ClassCode ||
+      ''}&StuUserCode=${params.StuUserCode ||
+      ''}&StuName=${params.StuName || ''}&ModuleCode=${params.ModuleCode ||
+      ''}&ItemCode=${params.ItemCode ||
+      ''}&StandardCode=${params.StandardCode || ''}`,
     )
     .then(res => {
       return res;
