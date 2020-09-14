@@ -31,7 +31,7 @@ const SearchFormUnit = props => {
   };
 
   useEffect(() => {
-    getSelectSum(); // 获取年级
+    getSelectSum(); // 获取多个字典项
   }, []);
 
   // 切换模块时

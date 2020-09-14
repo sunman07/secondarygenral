@@ -1,8 +1,23 @@
 
-import React, { Fragment } from 'react';
+import React, { useState, Fragment,forwardRef,  useImperativeHandle } from 'react';
 import styles from './statusprogress.less';
 import { Table } from 'antd';
-const MainContainEntry = () => {
+const MainContainEntry = forwardRef((props, ref) => {
+    const {
+        mainData,
+        pageTotal,
+        pageChange,
+        mainloading,
+        onReset,
+      } = props;
+      const [pageNum, setPageNum] = useState(1);
+      useImperativeHandle(ref, () => ({
+        subPageChange: subPageChange,
+      }));
+      const subPageChange = value => {
+        setPageNum(value);
+        pageChange(value);
+      };
 
     const columns = [
         {
@@ -77,11 +92,17 @@ const MainContainEntry = () => {
         className={styles.entryContain}
         columns={columns}
         dataSource={dataMainEntry}
+        pagination={{
+            total: pageTotal,
+            pageSize: 10,
+            current: pageNum,
+            onChange: page => subPageChange(page),
+          }}
         bordered
         size="middle"
         scroll={{ x: 'calc(700px + 50%)', y: 140 }}
     /></div></Fragment>)
 
-}
+})
 
 export default MainContainEntry

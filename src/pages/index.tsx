@@ -3,6 +3,7 @@ import { Layout, Card } from 'antd';
 const { Header, Content } = Layout;
 import StandardConfigSecondary from './integraldata/index';
 import ProgressMainPage from './statusprogress/index';
+import ObtainScoreOn from './acquirepoints/index'
 import styles from './index.less';
 export default () => {
   const [noTitleKey, setNoTitleKey] = useState('progress');
@@ -23,12 +24,11 @@ export default () => {
 
   const contentListNoTitle = {
     progress: <ProgressMainPage />,
-    scorestudy: <p>学分数据</p>,
+    scorestudy:<ObtainScoreOn />,
     poiontdata: <StandardConfigSecondary />,
   };
 
   const onTabChange = (key: React.SetStateAction<string>, type: string) => {
-    console.log(key, type);
     setNoTitleKey(key);
     // this.setState({ [type]: key });
   };

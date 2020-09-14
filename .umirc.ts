@@ -1,7 +1,7 @@
 import { defineConfig } from 'umi';
 //cdn地址
 const cdnBaseHttp = 'https://h5public.xiaoyuanjijiehao.com/';
-const token = '76TMUE-3NTSTTUIM3H6QAQ';
+const token = 'SBJPC13XOLARXJBCIJI5-A';
 export default defineConfig({
   publicPath: './',
   routes: [

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { Button, Select, Layout, Form, Input, Modal, message } from 'antd';
 import {getScoreOfEntry,getApproveScore } from '@/services/service';
 import moment from 'moment';
-import styles from './integraldata.less';
+import styles from './acquirepoints.less';
 import classNames from 'classnames';
 import SearchSubUnit from './searchform';
 import MainContent from './maincontent';
@@ -11,7 +11,7 @@ import DetailsSubUnit from './detailsdisplay';
 const { Option } = Select;
 const { Content } = Layout;
 
-const StandardConfigSecondary = () => {
+const ObtainScoreOn = () => {
   const [configEntry, setConfigEntry] = useState([]);
   const [paramsOfEntry, setParamsOfEntry] = useState({
     Page: 1,
@@ -146,4 +146,4 @@ const StandardConfigSecondary = () => {
   );
 };
 
-export default StandardConfigSecondary;
+export default ObtainScoreOn;

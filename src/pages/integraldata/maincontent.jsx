@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { Table, Divider, Row, Col, Button, message } from 'antd';
 import styles from './integraldata.less';
-import { getApproveScore } from '@/services/service';
+import { getApproveScore,getScoreOfEntry } from '@/services/service';
 const MainContent = forwardRef((props, ref) => {
   const {
     mainData,
@@ -17,7 +17,6 @@ const MainContent = forwardRef((props, ref) => {
     onReset,
     openDetails,
   } = props;
-  const [selectedRowKey, setSelectedRowKey] = useState(String);
   const [pageNum, setPageNum] = useState(1);
   useImperativeHandle(ref, () => ({
     subPageChange: subPageChange,
@@ -36,11 +35,6 @@ const MainContent = forwardRef((props, ref) => {
 
   const columns = [
     {
-      title: '序号',
-      dataIndex: 'key',
-      key: 'key',
-    },
-    {
       title: '姓名',
       dataIndex: 'StuName',
       key: 'StuName',
@@ -55,6 +49,20 @@ const MainContent = forwardRef((props, ref) => {
       dataIndex: 'ClassName',
       key: 'ClassName',
     },
+
+
+    {
+      title: '年级',
+      dataIndex: 'GradeName',
+      key: 'GradeName',
+    },
+    {
+      title: '院系',
+      dataIndex: 'AcademyName',
+      key: 'AcademyName',
+    },
+
+
     {
       title: '模块',
       dataIndex: 'ModuleName',
@@ -70,17 +78,38 @@ const MainContent = forwardRef((props, ref) => {
       dataIndex: 'StandardName',
       key: 'StandardName',
     },
+
+
     {
-      title: '分值',
+      title: '获得积分',
       dataIndex: 'Score',
       key: 'Score',
     },
     {
-      title: '申请时间',
-      dataIndex: 'ReportDate',
-      key: ' ReportDate',
+      title: '原始分数',
+      dataIndex: 'Score',
+      key: 'Score',
     },
-
+    {
+      title: '获得日期',
+      dataIndex: 'Score',
+      key: 'Score',
+    },
+    {
+      title: '来源',
+      dataIndex: 'Score',
+      key: 'Score',
+    },
+    {
+      title: '审批日期',
+      dataIndex: 'Score',
+      key: 'Score',
+    },
+    {
+      title: '审批人',
+      dataIndex: 'Score',
+      key: 'Score',
+    },
     {
       title: '详细描述',
       dataIndex: 'address',
@@ -103,7 +132,7 @@ const MainContent = forwardRef((props, ref) => {
         return <a>点击查看</a>;
       },
     },
-    {
+   /*  {
       title: '审批状态',
       dataIndex: 'ApprovalStatus',
       render: (text, record) => {
@@ -117,79 +146,25 @@ const MainContent = forwardRef((props, ref) => {
           </span>
         );
       },
-    },
+    }, */
   ];
-
-  //选择行
-  const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log('selectedRowKeys changed: ', selectedRowKeys, selectedRowKey);
-      setSelectedRowKey(selectedRowKeys);
-    },
-  };
-
-  //审批接口 getApproveScore
-
-  const toApproveScore = params => {
-    getApproveScore(params).then(res => {
-      if (res.status === 200 && res.data.Msg === '操作成功') {
-        message.success(res.data.Msg);
-      } else {
-        message.error('操作失败');
-      }
-    });
-  };
-
-  //不通过审批
-
-  const unApprove = () => {
-    console.log(selectedRowKey, '已选择');
-    if (selectedRowKey.length === 0) {
-      message.error('请您选择后再操作');
-    } else {
-      const params = {
-        RecordId: selectedRowKey,
-        RejectReason: '',
-        ApprovalStatus: 13,
-      };
-      toApproveScore(params);
-      onReset();
-    }
-  };
-
-  const doApprove = () => {
-    if (selectedRowKey.length === 0) {
-      message.error('请您选择后再操作');
-    } else {
-      const params = {
-        RecordId: selectedRowKey,
-        RejectReason: '',
-        ApprovalStatus: 14,
-      };
-      toApproveScore(params);
-      onReset();
-    }
+  
+ //导出
+  const exportLet = () => {
+ 
   };
   return (
     <Fragment>
       <Row className={styles.mainApprove}>
         <Col span="24" align="right">
-          <Button
-            onClick={unApprove}
-            className={styles.buttonApprove}
-            htmlType="button"
-          >
-            审批不通过
-          </Button>
-          <Button onClick={doApprove} type="primary">
-            审批通过
+          <Button onClick={exportLet} type="primary">
+            导出
           </Button>
         </Col>
       </Row>
       <Table
         columns={columns}
         dataSource={mainData}
-        rowSelection={rowSelection}
         rowKey="RecordId"
         loading={mainloading}
         pagination={{

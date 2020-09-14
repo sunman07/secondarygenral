@@ -8,24 +8,18 @@ import {
   getGradeWithTerm,
   getMangerAcademy
 } from '@/services/service';
-import styles from './integraldata.less';
+import styles from './acquirepoints.less';
 import { Form, Button, Select, Row, Col, Input, DatePicker, Space, message } from 'antd';
 const { RangePicker } = DatePicker
 const SearchSubUnit = props => {
   const { onSearch, onReset } = props;
   const [moduleEntry, setModuleEntry] = useState([]); // 模块select
-  const [objectEntry, setObjectEntry] = useState([]); // 项目select
-  const [standardEntry, setStandardEntry] = useState([]); // 项目select
+  
   const [classEntry, setClassEntry] = useState([]); // 班级select
   const [termEntry, setTermEntry] = useState([]); // 学期select
   const [gradeEntry, setGradeEntry] = useState([]); // 学期select
   const [academyEntry,setAcademyEntry] =useState([]) //学院字典
   const [form] = Form.useForm();
-  const statusRead = [
-    { statusCode: 12, name: '待审批' },
-    { statusCode: 13, name: '审批不通过' },
-    { statusCode: 14, name: '审批通过' },
-  ];
 
    //重置表单
    const formReset = event => {
@@ -77,45 +71,9 @@ const SearchSubUnit = props => {
       }
     })
   };
-
-  const getItemSum = params => {
-    //项目字典
-    getObjectDic(params).then(res => {
-      if (res.status === 200) {
-        setObjectEntry(res.data.List);
-      } else {
-        message.error('获取项目字典失败');
-      }
-    });
-  };
-
-  const getStandardSum = params => {
-    //标准字典
-    getStandardsDic(params).then(res => {
-      if (res.status === 200) {
-        setStandardEntry(res.data.List);
-      } else {
-        message.error('获取标准字典失败');
-      }
-    });
-  };
-
   useEffect(() => {
     getSelectSum(); // 获取综合字典项
   }, []);
-
-  // 切换模块时
-  const moduleChange = moduleCode => {
-    getItemSum(moduleCode);
-    form.setFieldsValue({ ItemCode: '' });
-    form.setFieldsValue({ StandardCode: '' });
-  };
-
-  const itemChange = itemCode => {
-    getStandardSum(itemCode);
-    form.setFieldsValue({ StandardCode: '' });
-  };
- 
 
   const rangeConfig = {
     rules: [{ type: 'array', required: false, message: 'Please select time!' }],
@@ -199,9 +157,8 @@ const SearchSubUnit = props => {
         </Row>
         <Row className={styles.rowGrids} gutter={24}>
           <Col span={6}>
-            <Form.Item name="ModuleCode" label="模块：">
+            <Form.Item name="StuType" label="学生类型：">
               <Select
-                onChange={moduleChange}
                 placeholder="请选择"
                 className={styles.selecton}
               >
@@ -216,50 +173,13 @@ const SearchSubUnit = props => {
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item name="ItemCode" label="项目：">
-              <Select
-                onChange={itemChange}
-                placeholder="请选择"
-                className={styles.selecton}
-              >
-                {objectEntry &&
-                  objectEntry.length > 0 &&
-                  objectEntry.map(i => (
-                    <Option value={i.ItemCode} key={i.ItemCode}>
-                      {i.ItemName}
-                    </Option>
-                  ))}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item name="StandardCode" label="标准：">
-              <Select placeholder="请选择" className={styles.selecton}>
-                {standardEntry &&
-                  standardEntry.length > 0 &&
-                  standardEntry.map(i => (
-                    <Option value={i.StandardCode} key={i.StandardCode}>
-                      {i.StandardName}
-                    </Option>
-                  ))}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={6}>
             <Form.Item name="StuUserCode" label="学号：">
               <Input className={styles.inputSearch} placeholder="请输入" />
             </Form.Item>
           </Col>
-        </Row>
-        <Row className={styles.rowGrids} gutter={24}>
           <Col span={6}>
             <Form.Item name="StuName" label="姓名：">
               <Input className={styles.inputSearch} placeholder="请输入" />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item name="DateTime" label="获得日期：" {...rangeConfig}>
-              <RangePicker showTime format="YYYY-MM-DD" />
             </Form.Item>
           </Col>
           <Col span={6} align="right" className={styles.btnperi}>
@@ -271,6 +191,7 @@ const SearchSubUnit = props => {
             </Button>
           </Col>
         </Row>
+        
       </Form>
     </div>
   );
