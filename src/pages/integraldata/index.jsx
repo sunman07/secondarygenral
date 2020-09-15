@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { Button, Select, Layout, Form, Input, Modal, message } from 'antd';
-import {getScoreOfEntry,getApproveScore } from '@/services/service';
+import {
+  getScoreOfEntry,
+  getApproveScore,
+  getSystemOfParameter,
+  getTermAllClass,
+} from '@/services/service';
 import moment from 'moment';
 import styles from './integraldata.less';
 import classNames from 'classnames';
@@ -10,13 +15,26 @@ import DetailsSubUnit from './detailsdisplay';
 
 const { Option } = Select;
 const { Content } = Layout;
-
+//初始化参数
+const paramsReset = {
+  Page: 1,
+  PageCount: 10,
+  AcademicYearCode: '',
+  AcademicTermCode: '',
+  AcademyCode: '',
+  GradeCode: '',
+  ClassCode: '',
+  ModuleCode: '',
+  ItemCode: '',
+  StandardCode: '',
+  StuUserCode: '',
+  StuName: '',
+  StartDate: '',
+  EndDate: '',
+};
 const StandardConfigSecondary = () => {
   const [configEntry, setConfigEntry] = useState([]);
-  const [paramsOfEntry, setParamsOfEntry] = useState({
-    Page: 1,
-    PageCount: 10,
-  });
+  const [paramsOfEntry, setParamsOfEntry] = useState(paramsReset);
   // 表格条目总数
   const [mainTotal, setMainTotal] = useState(Number);
   const [mainloading, setMainloading] = useState(false);
@@ -24,7 +42,8 @@ const StandardConfigSecondary = () => {
   const [checkDetails, setCheckDetails] = useState(false);
   //传递详情数据至detailsdisplay组件
   const [infoDetails, setInfoDetails] = useState(Object);
- 
+  //系统参数
+  const [argumentSystem, setArgumentSystem] = useState(String);
   const [form] = Form.useForm();
   const openDetails = values => {
     setInfoDetails(values);
@@ -35,34 +54,70 @@ const StandardConfigSecondary = () => {
     setInfoDetails('');
   };
 
+  //获取系统参数 确定当前角色获取学年/学期范围 /proxy/v1/core/api/v1/systemparams/get
+  const getSystemConfig = () => {
+    getSystemOfParameter().then(res => {
+      console.log(res, '返回');
+      if (res.status === 200) {
+        console.log(res.data.Value);
+        let paramSystem = String;
+        let paramSystemAll = [];
+        switch (res.data.Value) {
+          case '1':
+            paramSystemAll = ['AcademicTerm', 'AcademicYear'];
+            break;
+          case '3':
+            paramSystem = 'AcademicYear';
+            break;
+          default:
+            paramSystemAll = ['AcademicTerm', 'AcademicYear'];
+            break;
+        }
+        getTermSumAllClass(paramSystemAll || paramSystem);
+      } else {
+        message.success('获取系统参数失败,无法获取范围字典');
+      }
+    });
+  };
+
+  const getTermSumAllClass = params => {
+    getTermAllClass(params).then(res => {
+      console.log(res);
+    });
+  };
 
   //搜索表单提交
   const onFinish = values => {
     //处理表单日期
-    let dateParams={}
-    if(values.DateTime){
-      dateParams={
-        StartDate:moment(values.DateTime[0]._d).format('YYYY-MM-DD'),
-        EndDate:moment(values.DateTime[1]._d).format('YYYY-MM-DD'),
-      }
+    const dateParams = {
+      StartDate: values.DateTime
+        ? moment(values.DateTime[0]._d).format('YYYY-MM-DD')
+        : '',
+      EndDate: values.DateTime
+        ? moment(values.DateTime[1]._d).format('YYYY-MM-DD')
+        : '',
+    };
+    //如果有undefined(未填写)把它们处理成空字符串
+    for (let i in values) {
+      values[i] = values[i] ? values[i] : '';
     }
-    let searchValues = Object.assign(values, paramsOfEntry,dateParams);
+    const searchValues = Object.assign(values, dateParams, {
+      Page: 1,
+      PageCount: 10,
+    });
+    //console.log(searchValues,'搜索结果',values);
     setParamsOfEntry(searchValues);
   };
 
   // 表单重置
   const onReset = () => {
     pageForContent.current.subPageChange(1);
-    setParamsOfEntry({
-      Page: 1,
-      PageCount: 10,
-      ApprovalStatus: 12,
-    });
+    setParamsOfEntry(paramsReset);
   };
 
   //获取子组件方法 列表分页
   const pageForContent = useRef(null);
-   
+
   //分页
   const onPageChange = values => {
     let copyOfEntry = {
@@ -95,6 +150,10 @@ const StandardConfigSecondary = () => {
     getConfigForStandard();
   }, [paramsOfEntry]);
 
+  useEffect(() => {
+    getSystemConfig();
+  }, []);
+
   return (
     <>
       <Fragment>
@@ -103,7 +162,11 @@ const StandardConfigSecondary = () => {
             {' '}
             <HeaderGroup />
           </Header> */}
-          <SearchSubUnit onSearch={onFinish} onReset={onReset} />
+          <SearchSubUnit
+            onSearch={onFinish}
+            onReset={onReset}
+            paramSystem={argumentSystem}
+          />
           <Content className={classNames(styles.contentMain)}>
             <MainContent
               className={styles.tablePeri}
@@ -125,15 +188,12 @@ const StandardConfigSecondary = () => {
               <div>
                 <Button
                   className={styles.buttonApprove}
+                  onClick={() => {
+                    closeDetails();
+                  }}
                   htmlType="button"
                 >
-                 确认
-                </Button>
-                <Button
-                  
-                  type="primary"
-                >
-                  取消
+                  确认
                 </Button>
               </div>
             }

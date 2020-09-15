@@ -6,35 +6,45 @@ import {
   getStandardsDic,
   getMangerClass,
   getGradeWithTerm,
-  getMangerAcademy
+  getMangerAcademy,
 } from '@/services/service';
 import styles from './integraldata.less';
-import { Form, Button, Select, Row, Col, Input, DatePicker, Space, message } from 'antd';
-const { RangePicker } = DatePicker
+import {
+  Form,
+  Button,
+  Select,
+  Row,
+  Col,
+  Input,
+  DatePicker,
+  Space,
+  message,
+} from 'antd';
+const { RangePicker } = DatePicker;
 const SearchSubUnit = props => {
-  const { onSearch, onReset } = props;
+  const { onSearch, onReset, paramSystem } = props;
   const [moduleEntry, setModuleEntry] = useState([]); // 模块select
   const [objectEntry, setObjectEntry] = useState([]); // 项目select
   const [standardEntry, setStandardEntry] = useState([]); // 项目select
   const [classEntry, setClassEntry] = useState([]); // 班级select
   const [termEntry, setTermEntry] = useState([]); // 学期select
   const [gradeEntry, setGradeEntry] = useState([]); // 学期select
-  const [academyEntry,setAcademyEntry] =useState([]) //学院字典
-  const [form] = Form.useForm();
-  const statusRead = [
-    { statusCode: 12, name: '待审批' },
-    { statusCode: 13, name: '审批不通过' },
-    { statusCode: 14, name: '审批通过' },
-  ];
+  const [academyEntry, setAcademyEntry] = useState([]); //学院字典
 
-   //重置表单
-   const formReset = event => {
+  const [form] = Form.useForm();
+
+  //重置表单
+  const formReset = event => {
     form.resetFields();
     onReset();
   };
-  
+
   //获取字典项
   const getSelectSum = () => {
+    // setTimeout(()=>{console.log(paramSystem,'props!!!');},4000)
+    if (!paramSystem) {
+      console.log('qwe', paramSystem);
+    }
     //模块字典
     getModuleDic().then(res => {
       if (res.status === 200) {
@@ -47,35 +57,36 @@ const SearchSubUnit = props => {
     getMangerClass().then(res => {
       if (res.status === 200) {
         setClassEntry(res.data.Classes);
-        // setClassEntry
       } else {
         message.error('获取班级字典失败');
       }
     });
+
     //获取学年
     getGradeWithTerm({ code_type: 'AcademicYear' }).then(res => {
       if (res.status === 200) {
-        setTermEntry(res.data.list)
-      }else {
+        setTermEntry(res.data.list);
+        console.log(res.data.list, '返回列表');
+      } else {
         message.error('获取学年字典失败');
       }
-    })
-    //获取学期
-    getGradeWithTerm({ code_type: 'AcademicTerm' }).then(res => {
-      if (res.status === 200) {
-        setGradeEntry(res.data.list)
-      }else {
-        message.error('获取学期字典失败');
-      }
-    })
-    //获取院系
-    getMangerAcademy().then(res=>{
-      if (res.status === 200) {
-        setAcademyEntry(res.data.list)
-      }else {
-        message.error('获取院系字典失败');
-      }
-    })
+    }),
+      //获取学期
+      getGradeWithTerm({ code_type: 'AcademicTerm' }).then(res => {
+        if (res.status === 200) {
+          setGradeEntry(res.data.list);
+        } else {
+          message.error('获取学期字典失败');
+        }
+      }),
+      //获取院系
+      getMangerAcademy().then(res => {
+        if (res.status === 200) {
+          setAcademyEntry(res.data.list);
+        } else {
+          message.error('获取院系字典失败');
+        }
+      });
   };
 
   const getItemSum = params => {
@@ -115,12 +126,10 @@ const SearchSubUnit = props => {
     getStandardSum(itemCode);
     form.setFieldsValue({ StandardCode: '' });
   };
- 
 
   const rangeConfig = {
-    rules: [{ type: 'array', required: false, message: 'Please select time!' }],
+    rules: [{ type: 'array', required: false, message: '请选择时间!' }],
   };
-
 
   return (
     <div className={styles.searchform}>
@@ -134,10 +143,7 @@ const SearchSubUnit = props => {
         <Row gutter={24}>
           <Col span={6}>
             <Form.Item name="AcademicYearCode" label="范围：">
-              <Select
-                placeholder="请选择"
-                className={styles.selecton}
-              >
+              <Select placeholder="请选择" className={styles.selecton}>
                 {termEntry &&
                   termEntry.length > 0 &&
                   termEntry.map(i => (
@@ -150,10 +156,7 @@ const SearchSubUnit = props => {
           </Col>
           <Col span={6}>
             <Form.Item name="AcademyCode" label="院系：">
-              <Select
-                placeholder="请选择"
-                className={styles.selecton}
-              >
+              <Select placeholder="请选择" className={styles.selecton}>
                 {classEntry &&
                   classEntry.length > 0 &&
                   classEntry.map(i => (
@@ -166,10 +169,7 @@ const SearchSubUnit = props => {
           </Col>
           <Col span={6}>
             <Form.Item name="GradeCode" label="年级：">
-              <Select
-                placeholder="请选择"
-                className={styles.selecton}
-              >
+              <Select placeholder="请选择" className={styles.selecton}>
                 {gradeEntry &&
                   gradeEntry.length > 0 &&
                   gradeEntry.map(i => (
@@ -182,10 +182,7 @@ const SearchSubUnit = props => {
           </Col>
           <Col span={6}>
             <Form.Item name="ClassCode" label="班级：">
-              <Select
-                placeholder="请选择"
-                className={styles.selecton}
-              >
+              <Select placeholder="请选择" className={styles.selecton}>
                 {classEntry &&
                   classEntry.length > 0 &&
                   classEntry.map(i => (
@@ -262,6 +259,7 @@ const SearchSubUnit = props => {
               <RangePicker showTime format="YYYY-MM-DD" />
             </Form.Item>
           </Col>
+          <Col span={6} align="right"></Col>
           <Col span={6} align="right" className={styles.btnperi}>
             <Button htmlType="submit" type="primary">
               查询

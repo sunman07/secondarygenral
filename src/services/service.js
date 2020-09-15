@@ -3,18 +3,37 @@ import { stringify } from 'qs';
 const baseUrl = '/apartment';
 const baseLink = '/secondclassroom';
 
-//积分查看列表 
-export const getScoreOfEntry = params => {
+//获取学生类型
+export const getStudentsWithTerm = () => {
+  return axios.get(`/core/api/v1/bizcode?code_type=studenttype`).then(res => {
+    return res;
+  });
+};
+
+//学分查看列表/api/v1/scoredataview/creditdata
+export const getCreditsOfEntry = params => {
   return axios
     .get(
       baseLink +
-      `/api/v1/scoredataview/integraldata?Page=${params.Page}&PageCount=${params.PageCount}&AcademicYearCode=${params.AcademicYearCode}&AcademicTermCode=${params.AcademicTermCode}&AcademyCode=${params.AcademyCode}&GradeCode=${params.GradeCode}&ClassCode=${params.ClassCode}&ModuleCode=${params.ModuleCode}&ItemCode=${params.ItemCode}&StandardCode=${params.StandardCode}&StuUserCode=${params.StuUserCode}&StuName=${params.StuName}&StartDate=${params.StartDate}&EndDate=${params.EndDate}`,
+        `/api/v1/scoredataview/creditdata?Page=${params.Page}&PageCount=${params.PageCount}&AcademicYearCode=${params.AcademicYearCode}&AcademicTermCode=${params.AcademicTermCode}&AcademyCode=${params.AcademyCode}&GradeCode=${params.GradeCode}&ClassCode=${params.ClassCode}&StudentType=${params.StudentType}&StuUserCode=${params.StuUserCode}&StuName=${params.StuName}`,
     )
     .then(res => {
       return res;
     });
 };
-//获取学年 学期 
+
+//积分查看列表
+export const getScoreOfEntry = params => {
+  return axios
+    .get(
+      baseLink +
+        `/api/v1/scoredataview/integraldata?Page=${params.Page}&PageCount=${params.PageCount}&AcademicYearCode=${params.AcademicYearCode}&AcademicTermCode=${params.AcademicTermCode}&AcademyCode=${params.AcademyCode}&GradeCode=${params.GradeCode}&ClassCode=${params.ClassCode}&ModuleCode=${params.ModuleCode}&ItemCode=${params.ItemCode}&StandardCode=${params.StandardCode}&StuUserCode=${params.StuUserCode}&StuName=${params.StuName}&StartDate=${params.StartDate}&EndDate=${params.EndDate}`,
+    )
+    .then(res => {
+      return res;
+    });
+};
+//获取学年 学期
 export const getGradeWithTerm = params => {
   return axios
     .get(`/core/api/v1/bizcode?code_type=${params.code_type}`, params)
@@ -34,14 +53,34 @@ export const getMainEntry = params => {
   return axios
     .get(
       baseLink +
-      `/api/v1/scoreapprove/queryscoreapprove?ApprovalStatus=${params.ApprovalStatus
-      }&Page=${params.Page}&PageCount=${params.PageCount
-      }&ClassCode=${params.ClassCode ||
-      ''}&StuUserCode=${params.StuUserCode ||
-      ''}&StuName=${params.StuName || ''}&ModuleCode=${params.ModuleCode ||
-      ''}&ItemCode=${params.ItemCode ||
-      ''}&StandardCode=${params.StandardCode || ''}`,
+        `/api/v1/scoreapprove/queryscoreapprove?ApprovalStatus=${
+          params.ApprovalStatus
+        }&Page=${params.Page}&PageCount=${
+          params.PageCount
+        }&ClassCode=${params.ClassCode ||
+          ''}&StuUserCode=${params.StuUserCode ||
+          ''}&StuName=${params.StuName || ''}&ModuleCode=${params.ModuleCode ||
+          ''}&ItemCode=${params.ItemCode ||
+          ''}&StandardCode=${params.StandardCode || ''}`,
     )
+    .then(res => {
+      return res;
+    });
+};
+//获取系统参数 确定当前角色获取学年/学期范围 /proxy/v1/core/api/v1/systemparams/get
+export const getSystemOfParameter = () => {
+  return axios
+    .get(
+      `/core/api/v1/systemparams/getp?SGroup=SecondClass&SType=SecondClassConvert&VName=SecondClassConvert`,
+    )
+    .then(res => {
+      return res;
+    });
+};
+//获取学年学期
+export const getTermAllClass = params => {
+  return axios
+    .get(`/core/api/v1/bizcode?code_type=AcademicYear&code_type=AcademicTerm`)
     .then(res => {
       return res;
     });
@@ -92,111 +131,6 @@ export const getObjectDic = params => {
 export const getStandardsDic = params => {
   return axios
     .get(baseLink + `/api/v1/standard/querystandardnopag?ItemCode=${params}`)
-    .then(res => {
-      return res;
-    });
-};
-//学分兑换查询模块
-export const getScoreForModule = params => {
-  return axios
-    .post(baseLink + `/api/v1/standard/querymodule`, params)
-    .then(res => {
-      return res;
-    });
-};
-
-//提交学分兑换
-export const toSubmitModule = params => {
-  return axios
-    .post(baseLink + `/api/v1/standard/setscoreconvert`, params)
-    .then(res => {
-      return res;
-    });
-};
-
-//查询学分兑换
-export const getModuleForExchange = () => {
-  return axios
-    .get(baseLink + `/api/v1/standard/queryscoreconvert`)
-    .then(res => {
-      return res;
-    });
-};
-//删除学分兑换
-export const delModuleOfExchange = params => {
-  return axios
-    .post(baseLink + `/api/v1/standard/delscoreconvert`, params)
-    .then(res => {
-      return res;
-    });
-};
-//查询项目
-export const getProjectItem = params => {
-  return axios
-    .post(baseLink + `/api/v1/standard/queryitem`, params)
-    .then(res => {
-      return res;
-    });
-};
-
-//添加项目
-export const addObjectItem = params => {
-  return axios.post(baseLink + `/api/v1/standard/additem`, params).then(res => {
-    return res;
-  });
-};
-
-//修改项目
-export const editsObjectItem = params => {
-  return axios
-    .post(baseLink + `/api/v1/standard/edititem`, params)
-    .then(res => {
-      return res;
-    });
-};
-//删除项目
-export const removeObjectItem = params => {
-  return axios.post(baseLink + `/api/v1/standard/delitem`, params).then(res => {
-    return res;
-  });
-};
-//修改模块
-export const editsModuleItem = params => {
-  return axios
-    .post(baseLink + `/api/v1/standard/editmodule`, params)
-    .then(res => {
-      return res;
-    });
-};
-//新增模块
-export const addModuleItem = params => {
-  return axios
-    .post(baseLink + `/api/v1/standard/addmodule`, params)
-    .then(res => {
-      return res;
-    });
-};
-
-//删除模块
-export const removeModuleItem = params => {
-  return axios
-    .post(baseLink + `/api/v1/standard/delmodule`, params)
-    .then(res => {
-      return res;
-    });
-};
-//添加标准
-export const addStandardItem = params => {
-  return axios
-    .post(baseLink + `/api/v1/standard/addstandard`, params)
-    .then(res => {
-      return res;
-    });
-};
-//编辑标注
-export const editsStandardItem = params => {
-  return axios
-    .post(baseLink + `/api/v1/standard/editstandard`, params)
     .then(res => {
       return res;
     });

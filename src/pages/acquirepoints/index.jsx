@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { Button, Select, Layout, Form, Input, Modal, message } from 'antd';
-import {getScoreOfEntry,getApproveScore } from '@/services/service';
+import { getScoreOfEntry, getApproveScore } from '@/services/service';
 import moment from 'moment';
 import styles from './acquirepoints.less';
 import classNames from 'classnames';
@@ -10,13 +10,23 @@ import DetailsSubUnit from './detailsdisplay';
 
 const { Option } = Select;
 const { Content } = Layout;
-
+//初始化参数
+const paramsReset = {
+  Page: 1,
+  PageCount: 10,
+  AcademicYearCode: '',
+  AcademicTermCode: '',
+  AcademyCode: '',
+  GradeCode: '',
+  ClassCode: '',
+  StudentType: '',
+  StuUserCode: '',
+  StuName: '',
+  ApprovalStatus: 12,
+};
 const ObtainScoreOn = () => {
   const [configEntry, setConfigEntry] = useState([]);
-  const [paramsOfEntry, setParamsOfEntry] = useState({
-    Page: 1,
-    PageCount: 10,
-  });
+  const [paramsOfEntry, setParamsOfEntry] = useState(paramsReset);
   // 表格条目总数
   const [mainTotal, setMainTotal] = useState(Number);
   const [mainloading, setMainloading] = useState(false);
@@ -24,7 +34,6 @@ const ObtainScoreOn = () => {
   const [checkDetails, setCheckDetails] = useState(false);
   //传递详情数据至detailsdisplay组件
   const [infoDetails, setInfoDetails] = useState(Object);
- 
   const [form] = Form.useForm();
   const openDetails = values => {
     setInfoDetails(values);
@@ -35,34 +44,24 @@ const ObtainScoreOn = () => {
     setInfoDetails('');
   };
 
-
   //搜索表单提交
   const onFinish = values => {
-    //处理表单日期
-    let dateParams={}
-    if(values.DateTime){
-      dateParams={
-        StartDate:moment(values.DateTime[0]._d).format('YYYY-MM-DD'),
-        EndDate:moment(values.DateTime[1]._d).format('YYYY-MM-DD'),
-      }
+    for (let i in values) {
+      values[i] = values[i] ? values[i] : '';
     }
-    let searchValues = Object.assign(values, paramsOfEntry,dateParams);
+    const searchValues = Object.assign(values, { Page: 1, PageCount: 10 });
+    console.log(searchValues);
     setParamsOfEntry(searchValues);
   };
 
   // 表单重置
   const onReset = () => {
     pageForContent.current.subPageChange(1);
-    setParamsOfEntry({
-      Page: 1,
-      PageCount: 10,
-      ApprovalStatus: 12,
-    });
+    setParamsOfEntry(paramsReset);
   };
 
   //获取子组件方法 列表分页
   const pageForContent = useRef(null);
-   
   //分页
   const onPageChange = values => {
     let copyOfEntry = {
@@ -94,7 +93,6 @@ const ObtainScoreOn = () => {
   useEffect(() => {
     getConfigForStandard();
   }, [paramsOfEntry]);
-
   return (
     <>
       <Fragment>
@@ -123,18 +121,10 @@ const ObtainScoreOn = () => {
             destroyOnClose={true}
             footer={
               <div>
-                <Button
-                  className={styles.buttonApprove}
-                  htmlType="button"
-                >
-                 确认
+                <Button className={styles.buttonApprove} htmlType="button">
+                  确认
                 </Button>
-                <Button
-                  
-                  type="primary"
-                >
-                  取消
-                </Button>
+                <Button type="primary">取消</Button>
               </div>
             }
           >
