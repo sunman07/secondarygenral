@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { Button, Select, Layout, Form, Input, Modal, message } from 'antd';
-import { getScoreOfEntry, getApproveScore } from '@/services/service';
+import { getScoreOfEntry, getCreditsOfEntry } from '@/services/service';
 import moment from 'moment';
 import styles from './acquirepoints.less';
 import classNames from 'classnames';
@@ -76,7 +76,7 @@ const ObtainScoreOn = () => {
     setMainloading(true);
     //清空主列表
     setConfigEntry([]);
-    getScoreOfEntry(paramsOfEntry).then(res => {
+    getCreditsOfEntry(paramsOfEntry).then(res => {
       if (res.status == 200) {
         setMainloading(false);
         setMainTotal(res.data.Total);
