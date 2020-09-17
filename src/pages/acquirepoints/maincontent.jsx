@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { Table, Divider, Row, Col, Button, message } from 'antd';
 import styles from './acquirepoints.less';
-import { getApproveScore,getScoreOfEntry } from '@/services/service';
+import { getApproveScore, exportAcquireData } from '@/services/service';
 const MainContent = forwardRef((props, ref) => {
   const {
     mainData,
@@ -16,6 +16,7 @@ const MainContent = forwardRef((props, ref) => {
     mainloading,
     onReset,
     openDetails,
+    searchValues,
   } = props;
   const [pageNum, setPageNum] = useState(1);
   useImperativeHandle(ref, () => ({
@@ -26,111 +27,118 @@ const MainContent = forwardRef((props, ref) => {
     pageChange(value);
   };
 
-  //状态select字典
-  const statusRead = [
-    { statusCode: 12, name: '待审批' },
-    { statusCode: 13, name: '审批不通过' },
-    { statusCode: 14, name: '审批通过' },
-  ];
+  //初始化表头
 
-  const columns = [
+  let columns = [
     {
-        title: '姓名',
-        dataIndex: 'name',
-        key: 'name',
-        width: 100,
-        fixed: 'left',
-
-    },
-    {
-      title: '学号',
-      dataIndex: 'name',
-      key: 'name',
+      title: '姓名',
+      dataIndex: 'StuName',
+      key: 'StuName',
       width: 100,
       fixed: 'left',
+    },
 
-  },
-  {
-    title: '班级',
-    dataIndex: 'name',
-    key: 'name',
-    width: 100,
-    fixed: 'left',
-
-},
-{
-  title: '年级',
-  dataIndex: 'name',
-  key: 'name',
-  width: 100,
-  fixed: 'left',
-
-},
-{
-  title: '院系',
-  dataIndex: 'name',
-  key: 'name',
-  width: 100,
-  fixed: 'left',
-
-},
     {
-        title: '思想政治素养',
-        children: [
-            {
-                title: '已获积分',
-                dataIndex: 'age',
-                key: 'age',
-                width: 150,
-            },
-            {
-                title: '已获学分',
-                dataIndex: 'age',
-
-            }
-        ],
+      title: '学号',
+      dataIndex: 'StuUserCode',
+      key: 'StuUserCode',
+      width: 100,
+      fixed: 'left',
     },
     {
-        title: '创新创业模块',
-        children: [
-            {
-                title: '已获积分',
-                dataIndex: 'age',
-                key: 'age',
-                width: 150,
-            },
-            {
-                title: '已获学分',
-                dataIndex: 'age',
-            }
-        ],
+      title: '班级',
+      dataIndex: 'ClassName',
+      key: 'ClassName',
+      width: 100,
+      fixed: 'left',
     },
     {
-      title: '文体活动模块+社会实践模块',
-      children: [
-          {
+      title: '年级',
+      dataIndex: 'GradeName',
+      key: 'GradeName',
+      width: 100,
+      fixed: 'left',
+    },
+    {
+      title: '院系',
+      dataIndex: 'AcademyName',
+      key: 'AcademyName',
+      width: 100,
+      fixed: 'left',
+    },
+  ];
+
+  //处理表格children项方法
+  const copeWithMainArray = mainData => {
+    let detailsCol = [];
+    if (mainData && mainData.length > 0) {
+      detailsCol = columns;
+      let itemCope = [];
+      //将请求结果mainData children项全部择出
+      mainData.map((item, index) => {
+        item.Transcript.map((tiny, num) => {
+          item[`credit${num}`] = tiny.Credit;
+          item[`integral${num}`] = tiny.Integral;
+        });
+      });
+      //将请求结果mainData加入到column中(表头)
+      mainData[0].Transcript.map((subject, index) => {
+        itemCope = {
+          title: subject.ModuleName,
+          children: [
+            {
               title: '已获积分',
-              dataIndex: 'age',
-              key: 'age',
+              dataIndex: `integral${index}`,
+              key: `integral${index}`,
               width: 150,
-          },
-          {
+            },
+            {
               title: '已获学分',
-              dataIndex: 'age',
-          }
-      ],
-  }
-];
-  
- //导出
+              dataIndex: `credit${index}`,
+              key: `credit${index}`,
+            },
+          ],
+        };
+        detailsCol.push(itemCope);
+      });
+    }
+    return detailsCol;
+  };
+
+  columns = copeWithMainArray(mainData);
+
+  //导出
   const exportLet = () => {
- 
+    let paramsIntegral = searchValues;
+
+    //单独请求文件下载
+    exportAcquireData(paramsIntegral).then(res => {
+      if (res.status === 200) {
+        let blobs = res.data;
+        let reader = new FileReader();
+        reader.readAsDataURL(blobs);
+        reader.onload = e => {
+          // 转换完成，创建一个a标签用于下载
+          let a = document.createElement('a');
+          a.download = '积分数据.xlsx';
+          a.href = e.target.result;
+          a.click();
+          message.success('下载成功');
+        };
+      } else {
+        message.error('获取文件流失败');
+      }
+    });
   };
   return (
     <Fragment>
       <Row className={styles.mainApprove}>
         <Col span="24" align="right">
-        <Button onClick={exportLet} className={styles.buttonApprove} type="primary">
+          <Button
+            onClick={exportLet}
+            className={styles.buttonApprove}
+            type="primary"
+          >
             下载成绩单
           </Button>
           <Button onClick={exportLet} type="primary">
@@ -138,21 +146,23 @@ const MainContent = forwardRef((props, ref) => {
           </Button>
         </Col>
       </Row>
-      <Table
-        columns={columns}
-        dataSource={mainData}
-        rowKey="RecordId"
-        loading={mainloading}
-        pagination={{
-          total: pageTotal,
-          pageSize: 10,
-          current: pageNum,
-          onChange: page => subPageChange(page),
-        }}
-        className={styles.tablePeri}
-        bordered={true}
-        hideOnSinglePage={false}
-      />
+      {
+        <Table
+          columns={columns}
+          dataSource={mainData}
+          rowKey="RecordId"
+          loading={mainloading}
+          pagination={{
+            total: pageTotal,
+            pageSize: 10,
+            current: pageNum,
+            onChange: page => subPageChange(page),
+          }}
+          className={styles.tablePeri}
+          bordered={true}
+          hideOnSinglePage={false}
+        />
+      }
     </Fragment>
   );
 });

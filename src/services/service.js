@@ -3,6 +3,42 @@ import { stringify } from 'qs';
 const baseUrl = '/apartment';
 const baseLink = '/secondclassroom';
 
+//导出学分
+export const exportAcquireData = params => {
+  return axios
+    .getblob({
+      url:
+        baseLink +
+        `/api/v1/scoredataview/exportcreditdata?AcademicYearCode=${params.AcademicYearCode}&AcademicTermCode=${params.AcademicTermCode}&AcademyCode=${params.AcademyCode}&GradeCode=${params.GradeCode}&ClassCode=${params.ClassCode}&StudentType=${params.StudentType}&StuUserCode=${params.StuUserCode}&StuName=${params.StuName}`,
+      method: 'get',
+      data: {},
+      responseType: 'blob',
+    })
+    .then(res => {
+      return res;
+    });
+};
+//导出积分 /api/v1/scoredataview/exportintegraldata
+export const exportIntegralData = params => {
+  return axios
+    .getblob({
+      url:
+        baseLink +
+        `/api/v1/scoredataview/exportintegraldata?AcademicYearCode=${params.AcademicYearCode}&AcademicTermCode=${params.AcademicTermCode}&AcademyCode=${params.AcademyCode}&GradeCode=${params.GradeCode}&ClassCode=${params.ClassCode}&ModuleCode=${params.ModuleCode}&ItemCode=${params.ItemCode}&StandardCode=${params.StandardCode}&StuUserCode=${params.StuUserCode}&StuName=${params.StuName}&StartDate=${params.StartDate}&EndDate=${params.EndDate}`,
+      method: 'get',
+      data: {},
+      responseType: 'blob',
+    })
+    .then(res => {
+      return res;
+    });
+};
+/* export const exportIntegralData = () => {
+  return axios.get(baseLink+`/api/v1/scoredataview/exportintegraldata`).then(res => {
+    return res;
+  });
+}; */
+
 //获取学生类型
 export const getStudentsWithTerm = () => {
   return axios.get(`/core/api/v1/bizcode?code_type=studenttype`).then(res => {
@@ -80,7 +116,7 @@ export const getSystemOfParameter = () => {
 //获取学年学期
 export const getTermAllClass = params => {
   return axios
-    .get(`/core/api/v1/bizcode?code_type=AcademicYear&code_type=AcademicTerm`)
+    .get(`/core/api/v1/bizcode?code_type=${params[0]}&code_type=${params[1]}`)
     .then(res => {
       return res;
     });

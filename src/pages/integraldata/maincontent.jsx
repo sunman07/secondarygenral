@@ -7,7 +7,11 @@ import React, {
 } from 'react';
 import { Table, Divider, Row, Col, Button, message } from 'antd';
 import styles from './integraldata.less';
-import { getApproveScore,getScoreOfEntry } from '@/services/service';
+import {
+  getApproveScore,
+  exportIntegralData,
+  getScoreOfEntry,
+} from '@/services/service';
 const MainContent = forwardRef((props, ref) => {
   const {
     mainData,
@@ -16,6 +20,7 @@ const MainContent = forwardRef((props, ref) => {
     mainloading,
     onReset,
     openDetails,
+    searchValues,
   } = props;
   const [pageNum, setPageNum] = useState(1);
   useImperativeHandle(ref, () => ({
@@ -25,13 +30,6 @@ const MainContent = forwardRef((props, ref) => {
     setPageNum(value);
     pageChange(value);
   };
-
-  //状态select字典
-  const statusRead = [
-    { statusCode: 12, name: '待审批' },
-    { statusCode: 13, name: '审批不通过' },
-    { statusCode: 14, name: '审批通过' },
-  ];
 
   const columns = [
     {
@@ -50,7 +48,6 @@ const MainContent = forwardRef((props, ref) => {
       key: 'ClassName',
     },
 
-
     {
       title: '年级',
       dataIndex: 'GradeName',
@@ -61,7 +58,6 @@ const MainContent = forwardRef((props, ref) => {
       dataIndex: 'AcademyName',
       key: 'AcademyName',
     },
-
 
     {
       title: '模块',
@@ -79,7 +75,6 @@ const MainContent = forwardRef((props, ref) => {
       key: 'StandardName',
     },
 
-
     {
       title: '获得积分',
       dataIndex: 'Score',
@@ -87,28 +82,28 @@ const MainContent = forwardRef((props, ref) => {
     },
     {
       title: '原始分数',
-      dataIndex: 'Score',
-      key: 'Score',
+      dataIndex: 'OriScore',
+      key: 'OriScore',
     },
     {
       title: '获得日期',
-      dataIndex: 'Score',
-      key: 'Score',
+      dataIndex: 'StartDate',
+      key: 'StartDate',
     },
     {
       title: '来源',
-      dataIndex: 'Score',
-      key: 'Score',
+      dataIndex: 'Source',
+      key: 'Source',
     },
     {
       title: '审批日期',
-      dataIndex: 'Score',
-      key: 'Score',
+      dataIndex: 'ApprovalDate',
+      key: 'ApprovalDate',
     },
     {
       title: '审批人',
-      dataIndex: 'Score',
-      key: 'Score',
+      dataIndex: 'Operator',
+      key: 'Operator',
     },
     {
       title: '详细描述',
@@ -132,26 +127,31 @@ const MainContent = forwardRef((props, ref) => {
         return <a>点击查看</a>;
       },
     },
-   /*  {
-      title: '审批状态',
-      dataIndex: 'ApprovalStatus',
-      render: (text, record) => {
-        return (
-          <span>
-            {
-              statusRead[
-                statusRead.findIndex(value => value.statusCode === text)
-              ].name
-            }
-          </span>
-        );
-      },
-    }, */
   ];
-  
- //导出
+
+  //导出
   const exportLet = () => {
- 
+    console.log(searchValues, '参数');
+    let paramsIntegral = searchValues;
+
+    //单独请求文件下载
+    exportIntegralData(paramsIntegral).then(res => {
+      if (res.status === 200) {
+        let blobs = res.data;
+        let reader = new FileReader();
+        reader.readAsDataURL(blobs);
+        reader.onload = e => {
+          // 转换完成，创建一个a标签用于下载
+          let a = document.createElement('a');
+          a.download = '积分数据.xlsx';
+          a.href = e.target.result;
+          a.click();
+          message.success('下载成功');
+        };
+      } else {
+        message.error('获取文件流失败');
+      }
+    });
   };
   return (
     <Fragment>

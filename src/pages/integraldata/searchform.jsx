@@ -22,7 +22,7 @@ import {
 } from 'antd';
 const { RangePicker } = DatePicker;
 const SearchSubUnit = props => {
-  const { onSearch, onReset, paramSystem } = props;
+  const { onSearch, onReset, scopeOfSystem } = props;
   const [moduleEntry, setModuleEntry] = useState([]); // 模块select
   const [objectEntry, setObjectEntry] = useState([]); // 项目select
   const [standardEntry, setStandardEntry] = useState([]); // 项目select
@@ -42,9 +42,7 @@ const SearchSubUnit = props => {
   //获取字典项
   const getSelectSum = () => {
     // setTimeout(()=>{console.log(paramSystem,'props!!!');},4000)
-    if (!paramSystem) {
-      console.log('qwe', paramSystem);
-    }
+
     //模块字典
     getModuleDic().then(res => {
       if (res.status === 200) {
@@ -144,9 +142,9 @@ const SearchSubUnit = props => {
           <Col span={6}>
             <Form.Item name="AcademicYearCode" label="范围：">
               <Select placeholder="请选择" className={styles.selecton}>
-                {termEntry &&
-                  termEntry.length > 0 &&
-                  termEntry.map(i => (
+                {scopeOfSystem &&
+                  scopeOfSystem.length > 0 &&
+                  scopeOfSystem.map(i => (
                     <Option value={i.code} key={i.code}>
                       {i.code_name}
                     </Option>

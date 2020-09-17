@@ -2,8 +2,25 @@ import axios from './request';
 import { message } from 'antd';
 
 const baseUrl = '/h5api/v1/school';
+const instance = axios.create({
+  baseURL: '',
+  timeout: 1000,
+  headers: { 'X-Custom-Header': 'foobar' },
+  responseType: 'blob',
+});
 
 let req = {
+  //配置文件流get方法
+  getblob(params) {
+    params.url =
+      params.url[0] !== '/' ? baseUrl + params.url : baseUrl + '/' + params.url;
+    return axios({
+      url: params.url,
+      method: params.method,
+      responseType: 'blob',
+    });
+  },
+
   get(url: string) {
     url = url[0] !== '/' ? baseUrl + url : baseUrl + '/' + url;
     return axios.get(url);

@@ -10,27 +10,15 @@ import {
   getStudentsWithTerm,
 } from '@/services/service';
 import styles from './acquirepoints.less';
-import {
-  Form,
-  Button,
-  Select,
-  Row,
-  Col,
-  Input,
-  DatePicker,
-  Space,
-  message,
-} from 'antd';
-const { RangePicker } = DatePicker;
-const SearchSubUnit = props => {
-  const { onSearch, onReset } = props;
-  const [moduleEntry, setModuleEntry] = useState([]); // 模块select
+import { Form, Button, Select, Row, Col, Input, Space, message } from 'antd';
 
+const SearchSubUnit = props => {
+  const { onSearch, onReset, scopeOfSystem } = props;
   const [classEntry, setClassEntry] = useState([]); // 班级select
   const [termEntry, setTermEntry] = useState([]); // 学期select
   const [gradeEntry, setGradeEntry] = useState([]); // 学期select
   const [academyEntry, setAcademyEntry] = useState([]); //学院字典
-  const [studentsEntry, setStudentsEntry] = useState([]); //
+  const [studentsEntry, setStudentsEntry] = useState([]);
   const [form] = Form.useForm();
 
   //重置表单
@@ -76,7 +64,6 @@ const SearchSubUnit = props => {
         message.error('获取学期字典失败');
       }
     });
-
     //获取学生类型字典
     getStudentsWithTerm().then(res => {
       if (res.status === 200) {
@@ -91,10 +78,6 @@ const SearchSubUnit = props => {
     getSelectSum(); // 获取综合字典项
   }, []);
 
-  const rangeConfig = {
-    rules: [{ type: 'array', required: false, message: 'Please select time!' }],
-  };
-
   return (
     <div className={styles.searchform}>
       <Form
@@ -108,9 +91,9 @@ const SearchSubUnit = props => {
           <Col span={6}>
             <Form.Item name="AcademicYearCode" label="范围：">
               <Select placeholder="请选择" className={styles.selecton}>
-                {termEntry &&
-                  termEntry.length > 0 &&
-                  termEntry.map(i => (
+                {scopeOfSystem &&
+                  scopeOfSystem.length > 0 &&
+                  scopeOfSystem.map(i => (
                     <Option value={i.code} key={i.code}>
                       {i.code_name}
                     </Option>

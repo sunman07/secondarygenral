@@ -1,7 +1,7 @@
 import { defineConfig } from 'umi';
 //cdn地址
 const cdnBaseHttp = 'https://h5public.xiaoyuanjijiehao.com/';
-const token = 'VPC4RCNNP_IWVMH84AE0UG';
+const token = 'XIXQJUX4O1IMQWMTOUNC_G';
 export default defineConfig({
   publicPath: './',
   routes: [
@@ -35,8 +35,8 @@ export default defineConfig({
         setHeader: (arg0: string, arg1: string) => void;
       }) => {
         //更改token请求
-        // proxyReq.setHeader('AccessToken', token);
         proxyReq.setHeader('AccessToken', token);
+        //proxyReq.setHeader('AccessToken', token);
         //const 为了注释而注释 = 1;
         proxyReq.setHeader('cache-control', 'no-cache');
         proxyReq.setHeader('user-agent', 'vscode-restclient');

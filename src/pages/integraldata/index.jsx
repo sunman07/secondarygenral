@@ -44,6 +44,8 @@ const StandardConfigSecondary = () => {
   const [infoDetails, setInfoDetails] = useState(Object);
   //系统参数
   const [argumentSystem, setArgumentSystem] = useState(String);
+  //搜索范围 传递给子组件
+  const [scopeOfSystem, setScopeOfSystem] = useState([]);
   const [form] = Form.useForm();
   const openDetails = values => {
     setInfoDetails(values);
@@ -54,35 +56,36 @@ const StandardConfigSecondary = () => {
     setInfoDetails('');
   };
 
-  //获取系统参数 确定当前角色获取学年/学期范围 /proxy/v1/core/api/v1/systemparams/get
+  //获取系统参数 确定当前角色获取学年/学期范围
   const getSystemConfig = () => {
     getSystemOfParameter().then(res => {
-      console.log(res, '返回');
       if (res.status === 200) {
-        console.log(res.data.Value);
-        let paramSystem = String;
         let paramSystemAll = [];
         switch (res.data.Value) {
           case '1':
             paramSystemAll = ['AcademicTerm', 'AcademicYear'];
             break;
           case '3':
-            paramSystem = 'AcademicYear';
+            paramSystemAll = ['AcademicYear', ''];
             break;
           default:
-            paramSystemAll = ['AcademicTerm', 'AcademicYear'];
+            paramSystemAll = ['', ''];
             break;
         }
-        getTermSumAllClass(paramSystemAll || paramSystem);
+        getTermSumAllClass(paramSystemAll);
       } else {
-        message.success('获取系统参数失败,无法获取范围字典');
+        message.error('获取系统参数失败,无法获取范围字典');
       }
     });
   };
 
   const getTermSumAllClass = params => {
     getTermAllClass(params).then(res => {
-      console.log(res);
+      if (res.status === 200) {
+        setScopeOfSystem(res.data.list);
+      } else {
+        message.error('获取范围字典失败');
+      }
     });
   };
 
@@ -133,6 +136,7 @@ const StandardConfigSecondary = () => {
     //清空主列表
     setConfigEntry([]);
     getScoreOfEntry(paramsOfEntry).then(res => {
+      console.log(res.data, '列表');
       if (res.status == 200) {
         setMainloading(false);
         setMainTotal(res.data.Total);
@@ -165,7 +169,7 @@ const StandardConfigSecondary = () => {
           <SearchSubUnit
             onSearch={onFinish}
             onReset={onReset}
-            paramSystem={argumentSystem}
+            scopeOfSystem={scopeOfSystem}
           />
           <Content className={classNames(styles.contentMain)}>
             <MainContent
@@ -175,6 +179,7 @@ const StandardConfigSecondary = () => {
               onReset={onReset}
               ref={pageForContent}
               mainData={configEntry}
+              searchValues={paramsOfEntry}
               pageTotal={mainTotal}
               pageChange={onPageChange}
             />
