@@ -3,6 +3,31 @@ import { stringify } from 'qs';
 const baseUrl = '/apartment';
 const baseLink = '/secondclassroom';
 
+//每个班级学院进度
+export const getProgressAllAcademy = params => {
+  return axios
+    .get(
+      baseLink +
+        `/api/v1/scoreprogress/queryprogress?Page=${params.Page}&PageCount=${params.PageCount}&AcademicYearCode=${params.AcademicYearCode}&AcademicTermCode=${params.AcademicTermCode}&StudentType=${params.StudentType}&GradeCode=${params.GradeCode}&AcademyCode=${params.AcademyCode}`,
+      params,
+    )
+    .then(res => {
+      return res;
+    });
+};
+
+//整体进度
+export const getProgressWithAll = params => {
+  return axios
+    .get(
+      baseLink +
+        `/api/v1/scoreprogress/getprogress?AcademicYearCode=${params.AcademicYearCode}&AcademicTermCode=${params.AcademicTermCode}&StudentType=${params.StudentType}&GradeCode=${params.GradeCode}&AcademyCode=${params.AcademyCode}`,
+      params,
+    )
+    .then(res => {
+      return res;
+    });
+};
 //导出学分
 export const exportAcquireData = params => {
   return axios

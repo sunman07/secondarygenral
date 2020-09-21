@@ -75,7 +75,7 @@ const SearchFormUnit = props => {
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item name="StuTypeCode" label="学生类型：">
+            <Form.Item name="StudentType" label="学生类型：">
               <Select
                 onChange={moduleChange}
                 placeholder="请选择"

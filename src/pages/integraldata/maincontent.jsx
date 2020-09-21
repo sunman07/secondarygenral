@@ -7,11 +7,7 @@ import React, {
 } from 'react';
 import { Table, Divider, Row, Col, Button, message } from 'antd';
 import styles from './integraldata.less';
-import {
-  getApproveScore,
-  exportIntegralData,
-  getScoreOfEntry,
-} from '@/services/service';
+import { exportIntegralData } from '@/services/service';
 const MainContent = forwardRef((props, ref) => {
   const {
     mainData,
@@ -86,6 +82,11 @@ const MainContent = forwardRef((props, ref) => {
       key: 'OriScore',
     },
     {
+      title: '时长',
+      dataIndex: 'TimeLen',
+      key: 'TimeLen',
+    },
+    {
       title: '获得日期',
       dataIndex: 'StartDate',
       key: 'StartDate',
@@ -133,7 +134,6 @@ const MainContent = forwardRef((props, ref) => {
   const exportLet = () => {
     console.log(searchValues, '参数');
     let paramsIntegral = searchValues;
-
     //单独请求文件下载
     exportIntegralData(paramsIntegral).then(res => {
       if (res.status === 200) {

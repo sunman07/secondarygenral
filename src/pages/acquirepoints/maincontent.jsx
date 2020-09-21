@@ -74,13 +74,14 @@ const MainContent = forwardRef((props, ref) => {
     if (mainData && mainData.length > 0) {
       detailsCol = columns;
       let itemCope = [];
+
       //将请求结果mainData children项全部择出
-      mainData.map((item, index) => {
+      /*  mainData.map((item, index) => {
         item.Transcript.map((tiny, num) => {
           item[`credit${num}`] = tiny.Credit;
           item[`integral${num}`] = tiny.Integral;
         });
-      });
+      }); */
       //将请求结果mainData加入到column中(表头)
       mainData[0].Transcript.map((subject, index) => {
         itemCope = {
@@ -88,18 +89,26 @@ const MainContent = forwardRef((props, ref) => {
           children: [
             {
               title: '已获积分',
-              dataIndex: `integral${index}`,
+              // dataIndex: `integral${index}`,
+              dataIndex: ['Transcript', index, 'Integral'],
               key: `integral${index}`,
               width: 150,
+              /*  render:(_,record)=> {
+                return record.Transcript[index].Integral;
+              } */
             },
             {
               title: '已获学分',
-              dataIndex: `credit${index}`,
-              key: `credit${index}`,
+              dataIndex: ['Transcript', index, 'Credit'],
+              key: `Transcript${index}`,
+              /* render:(_,record)=> {
+                return record.Transcript[index].Credit;
+              } */
             },
           ],
         };
         detailsCol.push(itemCope);
+        console.log('wqqwqw', detailsCol);
       });
     }
     return detailsCol;
